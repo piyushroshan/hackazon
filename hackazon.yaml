@@ -1,0 +1,129 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hackazonapp
+  labels:
+    app: hackazonapp
+spec:
+  ports:
+  - port: 1443
+    nodePort: 30143
+    targetPort: 443
+    name: https
+  - port: 1080
+    nodePort: 30180
+    targetPort: 80
+    name: http
+
+  type: LoadBalancer
+  #type: NodePort
+  selector:
+    app: hackazonapp
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hackazonapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hackazonapp
+  template:
+    metadata:
+      labels:
+        app: hackazonapp
+    spec:
+      containers:
+      - name: hackazonapp
+        #image: openresty/openresty:alpine
+        image: piyushroshan/hackazon
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        env:
+          - name: vulnerable
+            value: "1"
+          - name: tokentimetolive
+            value: "864000"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hackazondb
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: hackazondb
+  clusterIP: None
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hackazondb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hackazondb
+  template:
+    metadata:
+      labels:
+        app: hackazondb
+    spec:
+      containers:
+      - name: hackazondb
+        #image: openresty/openresty:alpine
+        image: mysql:5.5
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        - name: MYSQL_DATABASE
+          value: hackazon
+        - name: MYSQL_USER
+          value: hackazon
+        - name: MYSQL_PASSWORD
+          value: hackazon
+        ports:
+        - containerPort: 3306
+          name: hackazondb
+        volumeMounts:
+        - name: hackazondb-persistent-storage
+          mountPath: /var/lib/hackazondb
+        - name: dbconfig
+          mountPath: /docker-entrypoint-initdb.d/db.sql
+          subPath: db.sql
+        - name: dbconfig
+          mountPath: /docker-entrypoint-initdb.d/hackazon_slaw_to_omer.sql
+          subPath: hackazon_slaw_to_omer.sql
+      volumes:
+      - name: hackazondb-persistent-storage
+        persistentVolumeClaim:
+          claimName: hackazondb-pv-claim
+      - name: dbconfig
+        configMap:
+          name: "dbconfig"
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: hackazondb-pv-claim
+  labels:
+    app: hackazondb
+spec:
+  #storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

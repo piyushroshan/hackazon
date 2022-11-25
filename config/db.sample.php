@@ -7,11 +7,11 @@ return array(
 		'driver' => 'PDOV',
 
 		//'Connection' is required if you use the PDO driver
-		'connection'=>'mysql:host=hackazon_db;dbname=hackazon',
+		'connection'=>'mysql:host=hackazondb;dbname=hackazon',
 
 		// 'db' and 'host' are required if you use Mysql driver
 		'db' => 'hackazon',
-		'host' => 'hackazon_db',
+		'host' => 'hackazondb',
         'port' => 3306
 	)
 );
