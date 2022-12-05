@@ -6,8 +6,8 @@
  * Time: 19:46
  */
 return array(
-    'host' => 'http://hackazon.com',     // Used in various scripts, where $_SERVER is inaccessible, or where there is a risk thereof.
-    'display_errors' => false,
+    'host' => 'http://hackazon.allvapps.com',     // Used in various scripts, where $_SERVER is inaccessible, or where there is a risk thereof.
+    'display_errors' => true,
     'use_perl_upload' => false,
     'use_external_dir' => false,
     'user_pictures_external_dir' => '/lib/init/rw',
@@ -15,7 +15,7 @@ return array(
     'common_path' => dirname(dirname(__DIR__)) . '/assets/views/common/',
     'annotation_length' => 900,
     'rest_in_profile' => false,
-    'profile_rest_data_type' => 'xml', // json | xml
+    'profile_rest_data_type' => 'json', // json | xml
     'test_user' => [
         'username' => 'test_user',
         'password' => '123456'

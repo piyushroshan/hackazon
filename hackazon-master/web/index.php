@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set("UTC");
 error_reporting(E_ERROR & ~E_NOTICE);
 ini_set("display_errors", 1);
 $root = dirname(__DIR__);
